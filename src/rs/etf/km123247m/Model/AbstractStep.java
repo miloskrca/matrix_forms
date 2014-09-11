@@ -42,7 +42,16 @@ public abstract class AbstractStep {
     }
 
     public String getTitle() {
-        return "Step " + number;
+        switch (number) {
+            case START:
+                return "Start";
+            case INFO:
+                return "Info";
+            case END:
+                return "Finish";
+            default:
+                return "Step " + number;
+        }
     }
 
     protected String generateHtml(IMatrix matrix) throws Exception {

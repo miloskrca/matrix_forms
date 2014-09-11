@@ -6,18 +6,19 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import rs.etf.km123247m.Command.ICommand;
 import rs.etf.km123247m.MainApp;
 import rs.etf.km123247m.Matrix.Forms.Implementation.PolynomialRationalCanonicalMatrixForm;
+import rs.etf.km123247m.Matrix.Forms.Implementation.SmithMatrixForm;
 import rs.etf.km123247m.Matrix.Forms.MatrixForm;
 import rs.etf.km123247m.Matrix.Handler.Implementation.MathITMatrixHandler;
 import rs.etf.km123247m.Matrix.Handler.MatrixHandler;
 import rs.etf.km123247m.Matrix.IMatrix;
 import rs.etf.km123247m.Model.AbstractStep;
 import rs.etf.km123247m.Model.RationalCanonicalStep;
+import rs.etf.km123247m.Model.SmithStep;
 import rs.etf.km123247m.Observer.Event.FormEvent;
 import rs.etf.km123247m.Observer.FormObserver;
 import rs.etf.km123247m.Parser.MatrixParser.MathIT.MathITMatrixFileParser;
@@ -110,6 +111,7 @@ public class MainAppController implements FormObserver {
                 if(selected.equals("Start")) {
                     selectedStep = stepObjects.getFirst();
                 } else if(selected.equals("Info")) {
+                    // TODO: fix displaying of html
                     selectedStep = stepObjects.getLast();
                 } else if(selected.equals("Finish")) {
                     selectedStep = stepObjects.getLast();
@@ -138,7 +140,7 @@ public class MainAppController implements FormObserver {
                     MatrixHandler handler = new MathITMatrixHandler(matrix);
                     matrixForm = null;
                     if(selectedItem.equals("Smith")) {
-                        matrixForm = null;
+                        matrixForm = new SmithMatrixForm(handler);
                     } else if(selectedItem.equals("Rational")) {
                         matrixForm = new PolynomialRationalCanonicalMatrixForm(handler);
                     } else if(selectedItem.equals("Jordan's")) {
@@ -158,12 +160,12 @@ public class MainAppController implements FormObserver {
     @Override
     public void update(Observable o, Object arg) {
         FormEvent event = (FormEvent) arg;
-        PolynomialRationalCanonicalMatrixForm form = (PolynomialRationalCanonicalMatrixForm) o;
+        MatrixForm form = (MatrixForm) o;
         AbstractStep step;
         switch (event.getType()) {
             case FormEvent.PROCESSING_START:
-                stepList.getItems().add("Start");
                 step = getStep(AbstractStep.START, null, event);
+                stepList.getItems().add(step.getTitle());
                 stepObjects.add(step);
                 matrixState.getEngine().loadContent(step.getHtml());
                 break;
@@ -175,14 +177,14 @@ public class MainAppController implements FormObserver {
                 matrixState.getEngine().loadContent(step.getHtml());
                 break;
             case FormEvent.PROCESSING_INFO:
-                stepList.getItems().add("Info");
                 step = getStep(AbstractStep.INFO, form.getCommands().getLast(), event);
+                stepList.getItems().add(step.getTitle());
                 stepObjects.add(step);
                 matrixState.getEngine().loadContent(step.getHtml());
                 break;
             case FormEvent.PROCESSING_END:
-                stepList.getItems().add("Finish");
                 step = getStep(AbstractStep.END, null, event);
+                stepList.getItems().add(step.getTitle());
                 stepObjects.add(step);
                 matrixState.getEngine().loadContent(step.getHtml());
 
@@ -198,7 +200,7 @@ public class MainAppController implements FormObserver {
     private AbstractStep getStep(int type, ICommand command, FormEvent event) {
         String selectedItem = (String) selectForm.getSelectionModel().getSelectedItem();
         if(selectedItem.equals("Smith")) {
-            return null;
+            return new SmithStep(type, command, event.getMatrix());
         } else if(selectedItem.equals("Rational")) {
             return new RationalCanonicalStep(type, command, event.getMatrix());
         } else if(selectedItem.equals("Jordan's")) {

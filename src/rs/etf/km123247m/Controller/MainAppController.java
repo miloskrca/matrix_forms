@@ -6,7 +6,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.web.WebView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import rs.etf.km123247m.Command.ICommand;
 import rs.etf.km123247m.MainApp;
@@ -17,6 +19,7 @@ import rs.etf.km123247m.Matrix.Handler.Implementation.MathITMatrixHandler;
 import rs.etf.km123247m.Matrix.Handler.MatrixHandler;
 import rs.etf.km123247m.Matrix.IMatrix;
 import rs.etf.km123247m.Model.AbstractStep;
+import rs.etf.km123247m.Model.LaTexCanvas;
 import rs.etf.km123247m.Model.RationalCanonicalStep;
 import rs.etf.km123247m.Model.SmithStep;
 import rs.etf.km123247m.Observer.Event.FormEvent;
@@ -42,8 +45,10 @@ public class MainAppController implements FormObserver {
     );
 
     private MatrixForm matrixForm;
-
+    private LaTexCanvas canvasPrev;
+    private LaTexCanvas canvas;
     private LinkedList<AbstractStep> stepObjects = new LinkedList<AbstractStep>();
+    private int count = 0;
 
     @FXML
     private ComboBox selectForm;
@@ -51,8 +56,14 @@ public class MainAppController implements FormObserver {
     private Label fileNameLabel;
     @FXML
     private ListView<String> stepList;
+//    @FXML
+//    private WebView stepDetailsTitle;1
+//    @FXML
+//    private Pane prevStepDetailsMatrixState;
+//    @FXML
+//    private FlowPane stepDetailsMatrixState;
     @FXML
-    private WebView matrixState;
+    private VBox matrixStateVBox;
 
     /**
      * Initializes the controller class. This method is automatically called
@@ -61,6 +72,32 @@ public class MainAppController implements FormObserver {
     @FXML
     private void initialize() {
         selectForm.setItems(formOptions);
+//        canvasPrev = new LaTexCanvas();
+//        canvas = new LaTexCanvas();
+//        prevStepDetailsMatrixState.getChildren().add(canvasPrev);
+//        stepDetailsMatrixState.getChildren().add(canvas);
+//        // Bind canvas size to stack pane size.
+//        canvas.widthProperty().bind(stepDetailsMatrixState.widthProperty());
+//        canvas.heightProperty().bind(stepDetailsMatrixState.heightProperty());
+//        // Bind canvas size to stack pane size.
+//        canvasPrev.widthProperty().bind(prevStepDetailsMatrixState.widthProperty());
+//        canvasPrev.heightProperty().bind(prevStepDetailsMatrixState.heightProperty());
+    }
+
+    protected LaTexCanvas addCanvas(String formula) {
+        LaTexCanvas canvas = new LaTexCanvas();
+
+        Pane pane = new AnchorPane();
+        pane.setMinHeight(50);
+        pane.getChildren().add(canvas);
+        // Bind canvas size to stack pane size.
+        canvas.widthProperty().bind(pane.widthProperty());
+        canvas.heightProperty().bind(pane.heightProperty());
+        matrixStateVBox.getChildren().add(pane);
+
+        canvas.setFormula(formula);
+
+        return canvas;
     }
 
     public void setMainApp(MainApp mainApp) {
@@ -85,7 +122,7 @@ public class MainAppController implements FormObserver {
      */
     @FXML
     private void editFile() {
-        if(selectedFile != null) {
+        if (selectedFile != null) {
             try {
                 desktop.open(selectedFile);
             } catch (IOException e) {
@@ -96,31 +133,21 @@ public class MainAppController implements FormObserver {
 
     @FXML
     private void stepSelected() {
-        String selected = stepList.getSelectionModel().getSelectedItem();
+        matrixStateVBox.getChildren().clear();
+        Integer selected = stepList.getSelectionModel().getSelectedIndices().get(0);
         AbstractStep selectedStep;
-        if(selected == null) {
-            matrixState.getEngine().loadContent("No steps selected.");
+        if (selected == -1) {
+//            stepDetailsTitle.getEngine().loadContent("No steps selected.");
         } else {
-            if(selected.equals("All")) {
-                String html = "";
-                for(AbstractStep step: stepObjects) {
-                    html += step.getHtml() + "<br />";
-                    matrixState.getEngine().loadContent("<html>" + html + "</html>");
-                }
-            } else {
-                if(selected.equals("Start")) {
-                    selectedStep = stepObjects.getFirst();
-                } else if(selected.equals("Info")) {
-                    // TODO: fix displaying of html
-                    selectedStep = stepObjects.getLast();
-                } else if(selected.equals("Finish")) {
-                    selectedStep = stepObjects.getLast();
-                } else {
-                    int step = Integer.parseInt(selected.substring("Step ".length()));
-                    selectedStep = stepObjects.get(step);
-                }
-                matrixState.getEngine().loadContent("<html>" + selectedStep.getHtml() + "</html>");
+            selectedStep = stepObjects.get(selected);
+//            stepDetailsTitle.getEngine().loadContent("<html>" + selectedStep.getHtmlTitle() + "</html>");
+            if(selected > 0) {
+                addCanvas(stepObjects.get(selected - 1).getMatrixState()).render();
             }
+            addCanvas(selectedStep.getMatrixState()).render();
+
+//            canvas.setFormula(selectedStep.getMatrixState());
+//            canvas.render();
         }
     }
 
@@ -129,24 +156,26 @@ public class MainAppController implements FormObserver {
      */
     @FXML
     private void startTransformation() {
-        if(selectedFile != null) {
+        if (selectedFile != null) {
             ObservableList<String> items = FXCollections.observableArrayList();
             stepList.setItems(items);
+            count = 1;
+            stepObjects.clear();
             IParser parser = new MathITMatrixFileParser(selectedFile);
             try {
                 String selectedItem = (String) selectForm.getSelectionModel().getSelectedItem();
-                if(selectedItem != null) {
+                if (selectedItem != null) {
                     IMatrix matrix = (IMatrix) parser.parseInput();
                     MatrixHandler handler = new MathITMatrixHandler(matrix);
                     matrixForm = null;
-                    if(selectedItem.equals("Smith")) {
+                    if (selectedItem.equals("Smith")) {
                         matrixForm = new SmithMatrixForm(handler);
-                    } else if(selectedItem.equals("Rational")) {
+                    } else if (selectedItem.equals("Rational")) {
                         matrixForm = new PolynomialRationalCanonicalMatrixForm(handler);
-                    } else if(selectedItem.equals("Jordan's")) {
+                    } else if (selectedItem.equals("Jordan's")) {
                         matrixForm = null;
                     }
-                    if(matrixForm != null) {
+                    if (matrixForm != null) {
                         matrixForm.addObserver(this);
                         matrixForm.start();
                     }
@@ -164,46 +193,40 @@ public class MainAppController implements FormObserver {
         AbstractStep step;
         switch (event.getType()) {
             case FormEvent.PROCESSING_START:
-                step = getStep(AbstractStep.START, null, event);
+                step = getStep(AbstractStep.START, null, event, form);
                 stepList.getItems().add(step.getTitle());
                 stepObjects.add(step);
-                matrixState.getEngine().loadContent(step.getHtml());
                 break;
             case FormEvent.PROCESSING_STEP:
-                ICommand command = form.getCommands().size() > 0 ? form.getCommands().getLast() : null;
-                step = getStep(stepList.getItems().size(), command, event);
+                ICommand stepCommand = form.getCommands().size() > 0 ? form.getCommands().getLast() : null;
+                step = getStep(count++, stepCommand, event, form);
                 stepList.getItems().add(step.getTitle());
                 stepObjects.add(step);
-                matrixState.getEngine().loadContent(step.getHtml());
                 break;
             case FormEvent.PROCESSING_INFO:
-                step = getStep(AbstractStep.INFO, form.getCommands().getLast(), event);
+                ICommand infoCommand = form.getCommands().size() > 0 ? form.getCommands().getLast() : null;
+                step = getStep(AbstractStep.INFO, infoCommand, event, form);
                 stepList.getItems().add(step.getTitle());
                 stepObjects.add(step);
-                matrixState.getEngine().loadContent(step.getHtml());
                 break;
             case FormEvent.PROCESSING_END:
-                step = getStep(AbstractStep.END, null, event);
+                step = getStep(AbstractStep.END, null, event, form);
                 stepList.getItems().add(step.getTitle());
                 stepObjects.add(step);
-                matrixState.getEngine().loadContent(step.getHtml());
-
-                //set all list option
-                stepList.getItems().add("All");
                 break;
             case FormEvent.PROCESSING_EXCEPTION:
-                matrixState.getEngine().loadContent(event.getMessage());
+//                stepDetailsTitle.getEngine().loadContent(event.getMessage());
                 break;
         }
     }
 
-    private AbstractStep getStep(int type, ICommand command, FormEvent event) {
+    private AbstractStep getStep(int type, ICommand command, FormEvent event, MatrixForm form) {
         String selectedItem = (String) selectForm.getSelectionModel().getSelectedItem();
-        if(selectedItem.equals("Smith")) {
-            return new SmithStep(type, command, event.getMatrix());
-        } else if(selectedItem.equals("Rational")) {
-            return new RationalCanonicalStep(type, command, event.getMatrix());
-        } else if(selectedItem.equals("Jordan's")) {
+        if (selectedItem.equals("Smith")) {
+            return new SmithStep(type, command, event, form);
+        } else if (selectedItem.equals("Rational")) {
+            return new RationalCanonicalStep(type, command, event, form);
+        } else if (selectedItem.equals("Jordan's")) {
             return null;
         }
 

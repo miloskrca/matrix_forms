@@ -1,7 +1,11 @@
 package rs.etf.km123247m.Model;
 
 import rs.etf.km123247m.Command.ICommand;
+import rs.etf.km123247m.Matrix.Forms.MatrixForm;
 import rs.etf.km123247m.Matrix.IMatrix;
+import rs.etf.km123247m.Observer.Event.FormEvent;
+
+import java.util.Arrays;
 
 /**
  * Created by Miloš Krsmanović.
@@ -14,31 +18,27 @@ public abstract class AbstractStep {
     public final static int START = -1;
     public final static int INFO = -2;
     public final static int END = -3;
-
     private int number;
-    private ICommand command;
-    public String html;
 
-    public AbstractStep(int number, ICommand command, IMatrix matrix) {
+    private MatrixForm form;
+    private FormEvent event;
+    private ICommand command;
+    private String matrixState;
+
+    public AbstractStep(int number, ICommand command, FormEvent event, MatrixForm form) {
         this.number = number;
         this.command = command;
+        this.event = event;
+        this.form = form;
         try {
-            html = generateHtml(matrix);
+            matrixState = generateMatrix();
         } catch (Exception e) {
-            html = e.getMessage();
+            System.out.println(Arrays.toString(e.getStackTrace()));
         }
     }
 
-    public int getNumber() {
-        return number;
-    }
-
-    public ICommand getCommand() {
-        return command;
-    }
-
-    public String getHtml() {
-        return html;
+    public String getMatrixState() {
+        return matrixState;
     }
 
     public String getTitle() {
@@ -54,27 +54,40 @@ public abstract class AbstractStep {
         }
     }
 
-    protected String generateHtml(IMatrix matrix) throws Exception {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getTitleForHtml()).append("<div><table border=0 cellpadding=0 cellspacing=0px "
-                + "style=\"border-left:1px solid #000; border-right:1px solid #000; color:#000\"><tr>"
-                + "<td style =\"border-top:1px solid #000; border-bottom:1px solid #000;\">"
-                + "&nbsp</td><td><table border=0 cellpadding=2 cellspacing=2 style=\"color:#000;\">");
-        for (int i = 0; i < matrix.getRowNumber(); i++) {
-            sb.append("<tr>");
-            for (int j = 0; j < matrix.getRowNumber(); j++) {
-                sb.append("<td align=\"center\" valign=\"center\">")
-                        .append(matrix.get(i, j).getElement().toString()).append("</td>");
+    protected abstract String generateMatrix() throws Exception;
+
+    public abstract String getHtmlTitle();
+
+    protected String generateLatexMatrix(IMatrix matrix) throws Exception {
+
+        String f = "\\begin{bmatrix}";
+        for (int row = 0; row < matrix.getRowNumber(); row++) {
+            for (int column = 0; column < matrix.getColumnNumber(); column++) {
+                f += matrix.get(row, column).getElement().toString();
+                if(column < matrix.getColumnNumber() - 1) {
+                    f += " & ";
+                }
             }
-            sb.append("</tr>");
+            f += " \\\\";
         }
+        f += "\\end{bmatrix}";
 
-        sb.append("</tr></table></td>"
-                + "<td style =\"border-top:1px solid #000; border-bottom:1px solid #000;\">&nbsp</td>"
-                + "</tr></table></div>");
-
-        return sb.toString();
+        return f;
     }
 
-    protected abstract String getTitleForHtml();
+    public int getNumber() {
+        return number;
+    }
+
+    public ICommand getCommand() {
+        return command;
+    }
+
+    public MatrixForm getForm() {
+        return form;
+    }
+
+    public FormEvent getEvent() {
+        return event;
+    }
 }

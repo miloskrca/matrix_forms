@@ -1,7 +1,9 @@
 package rs.etf.km123247m.Model;
 
 import rs.etf.km123247m.Command.ICommand;
-import rs.etf.km123247m.Matrix.IMatrix;
+import rs.etf.km123247m.Matrix.Forms.Implementation.RationalCanonicalMatrixForm;
+import rs.etf.km123247m.Matrix.Forms.MatrixForm;
+import rs.etf.km123247m.Observer.Event.FormEvent;
 
 /**
  * Created by Miloš Krsmanović.
@@ -10,11 +12,20 @@ import rs.etf.km123247m.Matrix.IMatrix;
  * package: rs.etf.km123247m.Model
  */
 public class RationalCanonicalStep extends AbstractStep {
-    public RationalCanonicalStep(int number, ICommand command, IMatrix matrix) {
-        super(number, command, matrix);
+
+    public RationalCanonicalStep(int number, ICommand command, FormEvent event, MatrixForm form) {
+        super(number, command, event, form);
     }
 
-    protected String getTitleForHtml() {
+    @Override
+    protected String generateMatrix() throws Exception {
+        RationalCanonicalMatrixForm rForm = (RationalCanonicalMatrixForm) getForm();
+        return "P[" + rForm.getRound() + "] = " + generateLatexMatrix(rForm.getP(rForm.getRound()))
+                + "\nA = " + generateLatexMatrix(rForm.getTransitionalMatrix(rForm.getRound()))
+                + "\nQ[" + rForm.getRound() + "] = " + generateLatexMatrix(rForm.getQ(rForm.getRound()));
+    }
+
+    public String getHtmlTitle() {
         String title;
         switch (getNumber()) {
             case START:

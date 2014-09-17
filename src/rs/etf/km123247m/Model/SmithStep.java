@@ -22,44 +22,25 @@ public class SmithStep extends AbstractStep {
         return "A = " + generateLatexMatrix(rForm.getFinalMatrix());
     }
 
-    public String getHtmlTitle() {
-        String title;
-        switch (getNumber()) {
-            case START:
-                title = "<h2>Start</h2><h3>Starting transformation to Smith normal form for matrix:<h3>";
-                break;
-            case INFO:
-                title = "<h2>Info</h2><h3>" + getEvent().getMessage() + "</h3>";
-                break;
-            case END:
-                title = "<h2>Finish</h2><h3>Transformation ended. Result:</h3>";
-                break;
-            default:
-                //step
-                title = "<h2>Step " + getNumber() + "</h2><h4>" + (getCommand() == null ? "" : getCommand().getDescription()) + "</h4>";
-        }
-
-        return title;
-    }
 
     @Override
     public String getLatexTitle() {
-        String title;
+        String title = "\\begin{array}{l}";
         switch (getNumber()) {
             case START:
-                title = "{\\LARGE Start }\\\\{\\Large Starting transformation to Smith normal form for matrix: }";
+                title += "\\text{\\LARGE Start }\\cr \\text{\\Large Starting transformation to Smith normal form for matrix:}";
                 break;
             case INFO:
-                title = "{\\LARGE Info }\\\\{\\Large " + getEvent().getMessage() + " }";
+                title += "\\text{\\LARGE Info }\\cr \\text{\\Large " + getEvent().getMessage() + "}";
                 break;
             case END:
-                title = "{\\LARGE Finish }\\\\{\\Large Transformation ended. Result:}";
+                title += "\\text{\\LARGE Finish }\\cr \\text{\\Large Transformation ended. Result:}";
                 break;
             default:
                 //step
-                title = "{\\LARGE Step " + getNumber() + "}\\\\{\\Large " + (getCommand() == null ? "" : getCommand().getDescription()) + "}";
+                title += "\\text{\\LARGE Step " + getNumber() + "}\\cr \\text{\\Large " + (getCommand() == null ? "" : getCommand().getDescription()) + " }";
         }
 
-        return title;
+        return title + "\\end{array}";
     }
 }

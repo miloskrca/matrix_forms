@@ -56,8 +56,6 @@ public abstract class AbstractStep {
 
     protected abstract String generateMatrix() throws Exception;
 
-    public abstract String getHtmlTitle();
-
     public abstract String getLatexTitle();
 
     protected String generateLatexMatrix(IMatrix matrix) throws Exception {

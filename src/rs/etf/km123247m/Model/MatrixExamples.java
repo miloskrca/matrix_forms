@@ -7,15 +7,15 @@ package rs.etf.km123247m.Model;
  * package: rs.etf.km123247m.Model
  */
 public abstract class MatrixExamples {
-    public static final String SMITH_EXAMPLE_MATRIX =
+    public static final String TWOxTWO =
             "1, 2;\n" +
             "3, 4;";
-    public static final String RATIONAL_EXAMPLE_MATRIX =
+    public static final String THREExTHREE =
             "2, 1, 0;\n" +
             "0, 2, 0;\n" +
             "0, 0, 3;";
-    public static final String JORDANS_EXAMPLE_MATRIX =
+    public static final String THREExTHREE_POLY =
             "2, 1, 0;\n" +
-            "0, 2, 0;\n" +
+            "0, 2, x;\n" +
             "0, 0, 3;";
 }

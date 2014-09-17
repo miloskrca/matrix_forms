@@ -20,67 +20,52 @@ public class RationalCanonicalStep extends AbstractStep {
     @Override
     protected String generateMatrix() throws Exception {
         RationalCanonicalMatrixForm rForm = (RationalCanonicalMatrixForm) getForm();
+        String text;
         switch (getNumber()) {
             case START:
                 if(rForm.getRound() == 0) {
-                    return "A = " + generateLatexMatrix(rForm.getStartMatrix())
+                    text = "A = " + generateLatexMatrix(rForm.getStartMatrix())
                             + "\nxI - A = " + generateLatexMatrix(rForm.getTransitionalMatrix(rForm.getRound()));
                 } else {
-                    return "B = " + generateLatexMatrix(rForm.getStartMatrix())
+                    text = "B = " + generateLatexMatrix(rForm.getStartMatrix())
                             + "\nxI - B = " + generateLatexMatrix(rForm.getTransitionalMatrix(rForm.getRound()));
                 }
+                break;
             case INFO:
-                return "R = " + generateLatexMatrix(rForm.getFinalMatrix());
+                text = "R = " + generateLatexMatrix(rForm.getFinalMatrix());
+                break;
             case END:
-                return "A = " + generateLatexMatrix(rForm.getStartMatrix())
+                text = "A = " + generateLatexMatrix(rForm.getStartMatrix())
                         + "\nR = " + generateLatexMatrix(rForm.getFinalMatrix())
                         + "\nT = " + generateLatexMatrix(rForm.getT());
-            default:
-                //step
-                return "P[" + rForm.getRound() + "] = " + generateLatexMatrix(rForm.getP(rForm.getRound()))
-                        + "\nA_I = " + generateLatexMatrix(rForm.getTransitionalMatrix(rForm.getRound()))
-                        + "\nQ[" + rForm.getRound() + "] = " + generateLatexMatrix(rForm.getQ(rForm.getRound()));
-        }
-    }
-
-    public String getHtmlTitle() {
-        String title;
-        switch (getNumber()) {
-            case START:
-                title = "<h2>Start</h2><h3>Starting transformation to Rational canonical form for matrix:<h3>";
-                break;
-            case INFO:
-                title = "<h2>Info</h2>";
-                break;
-            case END:
-                title = "<h2>Finish</h2><h3>Transformation ended. Result:</h3>";
                 break;
             default:
                 //step
-                title = "<h2>Step " + getNumber() + "</h2><h4>" + (getCommand() == null ? "" : getCommand().getDescription()) + "</h4>";
+                text = "P[" + rForm.getRound() + "] = " + generateLatexMatrix(rForm.getP(rForm.getRound()))
+                        + "\nA_I = " + generateLatexMatrix(rForm.getTransitionalMatrix(rForm.getRound()));
         }
 
-        return title;
+        return text;
     }
 
     @Override
     public String getLatexTitle() {
-        String title;
+        String title = "\\begin{array}{l}";
         switch (getNumber()) {
             case START:
-                title = "{\\LARGE Start }\\\\{\\Large Starting transformation to Rational canonical form for matrix: }";
+                title += "\\text{\\LARGE Start }\\cr \\text{\\Large Starting transformation to Rational canonical form for matrix:}";
                 break;
             case INFO:
-                title = "{\\LARGE Info }";
+                title += "\\text{\\LARGE Info }\\cr \\text{\\Large " + getEvent().getMessage() + "}";
                 break;
             case END:
-                title = "{\\LARGE Finish }\\\\{\\Large Transformation ended. Result:}";
+                title += "\\text{\\LARGE Finish }\\cr \\text{\\Large Transformation ended. Result:}";
                 break;
             default:
                 //step
-                title = "{\\LARGE Step " + getNumber() + "}\\\\{\\Large " + (getCommand() == null ? "" : getCommand().getDescription()) + "}";
+                title += "\\text{\\LARGE Step " + getNumber() + "}\\cr \\text{\\Large " + (getCommand() == null ? "" : getCommand().getDescription()) + " }";
         }
 
-        return title;
+        return title + "\\end{array}";
     }
 }

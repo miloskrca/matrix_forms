@@ -95,24 +95,24 @@ public class MainAppController implements FormObserver {
     }
 
     @FXML
-    private void setSmithMatrixExampleAction() {
+    private void set2x2ExampleMatrixAction() {
         fileNameLabel.setText("");
-        statusLabel.setText("Loaded example for Smith normal form.");
-        inlineInput.setText(MatrixExamples.SMITH_EXAMPLE_MATRIX);
+        statusLabel.setText("Loaded example 2x2 matrix.");
+        inlineInput.setText(MatrixExamples.TWOxTWO);
     }
 
     @FXML
-    private void setRationalMatrixExampleAction() {
-        statusLabel.setText("Loaded example for Rational canonical form.");
+    private void set3x3ExampleMatrixAction() {
+        statusLabel.setText("Loaded example 3x3 matrix.");
         fileNameLabel.setText("");
-        inlineInput.setText(MatrixExamples.RATIONAL_EXAMPLE_MATRIX);
+        inlineInput.setText(MatrixExamples.THREExTHREE);
     }
 
     @FXML
-    private void setJordansMatrixExampleAction() {
-        statusLabel.setText("Loaded example for Jordans canonical form.");
+    private void set3x3PolyExampleMatrixAction() {
+        statusLabel.setText("Loaded example 3x3 matrix with polynomial elements.");
         fileNameLabel.setText("");
-        inlineInput.setText(MatrixExamples.JORDANS_EXAMPLE_MATRIX);
+        inlineInput.setText(MatrixExamples.THREExTHREE_POLY);
     }
 
     @FXML
@@ -155,14 +155,13 @@ public class MainAppController implements FormObserver {
         Integer selected = stepList.getSelectionModel().getSelectedIndices().get(0);
         AbstractStep selectedStep;
         if (selected == -1) {
-//            stepDetailsTitle.getEngine().loadContent("No steps selected.");
+            addCanvas("\\text{No steps selected.}").render();
         } else {
             selectedStep = stepObjects.get(selected);
-//            stepDetailsTitle.getEngine().loadContent("<html>" + selectedStep.getHtmlTitle() + "</html>");
+            addCanvas(selectedStep.getLatexTitle()).render();
             if(selected > 0 && selected < stepObjects.size() - 1) {
                 addCanvas(stepObjects.get(selected - 1).getMatrixState()).render();
             }
-            addCanvas(selectedStep.getLatexTitle()).render();
             addCanvas(selectedStep.getMatrixState()).render();
         }
     }

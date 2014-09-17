@@ -16,9 +16,9 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Examples">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#setSmithMatrixExampleAction" text="Smith normal form" />
-                  <MenuItem mnemonicParsing="false" onAction="#setRationalMatrixExampleAction" text="Rational canonical" />
-                  <MenuItem mnemonicParsing="false" onAction="#setJordansMatrixExampleAction" text="Jordans canonical" />
+              <MenuItem mnemonicParsing="false" onAction="#set2x2ExampleMatrixAction" text="2x2" />
+                  <MenuItem mnemonicParsing="false" onAction="#set3x3ExampleMatrixAction" text="3x3" />
+                  <MenuItem mnemonicParsing="false" onAction="#set3x3PolyExampleMatrixAction" text="3x3 with polynomial elements" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">

@@ -20,9 +20,27 @@ public class RationalCanonicalStep extends AbstractStep {
     @Override
     protected String generateMatrix() throws Exception {
         RationalCanonicalMatrixForm rForm = (RationalCanonicalMatrixForm) getForm();
-        return "P[" + rForm.getRound() + "] = " + generateLatexMatrix(rForm.getP(rForm.getRound()))
-                + "\nA = " + generateLatexMatrix(rForm.getTransitionalMatrix(rForm.getRound()))
-                + "\nQ[" + rForm.getRound() + "] = " + generateLatexMatrix(rForm.getQ(rForm.getRound()));
+        switch (getNumber()) {
+            case START:
+                if(rForm.getRound() == 0) {
+                    return "A = " + generateLatexMatrix(rForm.getStartMatrix())
+                            + "\nxI - A = " + generateLatexMatrix(rForm.getTransitionalMatrix(rForm.getRound()));
+                } else {
+                    return "B = " + generateLatexMatrix(rForm.getStartMatrix())
+                            + "\nxI - B = " + generateLatexMatrix(rForm.getTransitionalMatrix(rForm.getRound()));
+                }
+            case INFO:
+                return "R = " + generateLatexMatrix(rForm.getFinalMatrix());
+            case END:
+                return "A = " + generateLatexMatrix(rForm.getStartMatrix())
+                        + "\nR = " + generateLatexMatrix(rForm.getFinalMatrix())
+                        + "\nT = " + generateLatexMatrix(rForm.getT());
+            default:
+                //step
+                return "P[" + rForm.getRound() + "] = " + generateLatexMatrix(rForm.getP(rForm.getRound()))
+                        + "\nA_I = " + generateLatexMatrix(rForm.getTransitionalMatrix(rForm.getRound()))
+                        + "\nQ[" + rForm.getRound() + "] = " + generateLatexMatrix(rForm.getQ(rForm.getRound()));
+        }
     }
 
     public String getHtmlTitle() {
@@ -40,6 +58,27 @@ public class RationalCanonicalStep extends AbstractStep {
             default:
                 //step
                 title = "<h2>Step " + getNumber() + "</h2><h4>" + (getCommand() == null ? "" : getCommand().getDescription()) + "</h4>";
+        }
+
+        return title;
+    }
+
+    @Override
+    public String getLatexTitle() {
+        String title;
+        switch (getNumber()) {
+            case START:
+                title = "{\\LARGE Start }\\\\{\\Large Starting transformation to Rational canonical form for matrix: }";
+                break;
+            case INFO:
+                title = "{\\LARGE Info }";
+                break;
+            case END:
+                title = "{\\LARGE Finish }\\\\{\\Large Transformation ended. Result:}";
+                break;
+            default:
+                //step
+                title = "{\\LARGE Step " + getNumber() + "}\\\\{\\Large " + (getCommand() == null ? "" : getCommand().getDescription()) + "}";
         }
 
         return title;

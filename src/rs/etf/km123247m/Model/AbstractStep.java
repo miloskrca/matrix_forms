@@ -58,6 +58,8 @@ public abstract class AbstractStep {
 
     public abstract String getHtmlTitle();
 
+    public abstract String getLatexTitle();
+
     protected String generateLatexMatrix(IMatrix matrix) throws Exception {
 
         String f = "\\begin{bmatrix}";

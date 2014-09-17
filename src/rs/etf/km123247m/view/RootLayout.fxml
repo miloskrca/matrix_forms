@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="rs.etf.km123247m.Controller.MainAppController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
+                  <MenuItem mnemonicParsing="false" onAction="#chooseFileAction" text="Open File" />
+              <MenuItem mnemonicParsing="false" onAction="#closeAction" text="Close" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
+          <Menu mnemonicParsing="false" text="Examples">
             <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
+              <MenuItem mnemonicParsing="false" onAction="#setSmithMatrixExampleAction" text="Smith normal form" />
+                  <MenuItem mnemonicParsing="false" onAction="#setRationalMatrixExampleAction" text="Rational canonical" />
+                  <MenuItem mnemonicParsing="false" onAction="#setJordansMatrixExampleAction" text="Jordans canonical" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
@@ -31,21 +36,53 @@
                <children>
                   <ToolBar prefHeight="40.0" prefWidth="200.0">
                     <items>
-                        <Button mnemonicParsing="false" onAction="#chooseFileAction" text="Choose File" />
-                        <Separator />
-                        <Label fx:id="fileNameLabel" text="File not selected." />
-                        <Button mnemonicParsing="false" onAction="#editFile" text="Edit" />
-                        <Separator />
                         <ComboBox fx:id="selectForm" prefWidth="150.0" promptText="-- Select form --" />
                         <Separator />
                       <Button mnemonicParsing="false" onAction="#startTransformation" text="Start" />
+                        <Separator />
+                        <Label fx:id="fileNameLabel" />
                     </items>
                   </ToolBar>
                   <SplitPane dividerPositions="0.2" VBox.vgrow="ALWAYS">
                     <items>
-                      <AnchorPane minHeight="0.0" minWidth="200.0" prefHeight="160.0" prefWidth="100.0">
+                      <AnchorPane maxWidth="-Infinity" minHeight="0.0" minWidth="200.0" prefWidth="100.0">
                            <children>
-                              <ListView fx:id="stepList" onKeyReleased="#stepSelected" onMouseClicked="#stepSelected" prefHeight="158.0" prefWidth="417.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="293.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <items>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                       <children>
+                                          <BorderPane prefHeight="143.0" prefWidth="198.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <center>
+                                                <ListView fx:id="stepList" onKeyReleased="#stepSelected" onMouseClicked="#stepSelected" prefHeight="143.0" prefWidth="198.0" BorderPane.alignment="CENTER" />
+                                             </center>
+                                             <top>
+                                                <ToolBar prefHeight="30.0" prefWidth="198.0" BorderPane.alignment="CENTER">
+                                                   <items>
+                                                      <Label text="Steps" />
+                                                   </items>
+                                                </ToolBar>
+                                             </top>
+                                          </BorderPane>
+                                       </children>
+                                    </AnchorPane>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                       <children>
+                                          <BorderPane prefHeight="142.0" prefWidth="198.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <center>
+                                                <TextArea fx:id="inlineInput" prefHeight="142.0" prefWidth="198.0" BorderPane.alignment="CENTER" />
+                                             </center>
+                                             <top>
+                                                <ToolBar prefHeight="30.0" prefWidth="198.0" BorderPane.alignment="CENTER">
+                                                   <items>
+                                                      <Label text="Matrix" />
+                                                   </items>
+                                                </ToolBar>
+                                             </top>
+                                          </BorderPane>
+                                       </children>
+                                    </AnchorPane>
+                                </items>
+                              </SplitPane>
                            </children>
                         </AnchorPane>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
@@ -61,6 +98,9 @@
       </AnchorPane>
    </center>
    <bottom>
-      <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <items>
+            <Label fx:id="statusLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" />
+         </items></ToolBar>
    </bottom>
 </BorderPane>

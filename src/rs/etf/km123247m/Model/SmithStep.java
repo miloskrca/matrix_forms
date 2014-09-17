@@ -41,4 +41,25 @@ public class SmithStep extends AbstractStep {
 
         return title;
     }
+
+    @Override
+    public String getLatexTitle() {
+        String title;
+        switch (getNumber()) {
+            case START:
+                title = "{\\LARGE Start }\\\\{\\Large Starting transformation to Smith normal form for matrix: }";
+                break;
+            case INFO:
+                title = "{\\LARGE Info }\\\\{\\Large " + getEvent().getMessage() + " }";
+                break;
+            case END:
+                title = "{\\LARGE Finish }\\\\{\\Large Transformation ended. Result:}";
+                break;
+            default:
+                //step
+                title = "{\\LARGE Step " + getNumber() + "}\\\\{\\Large " + (getCommand() == null ? "" : getCommand().getDescription()) + "}";
+        }
+
+        return title;
+    }
 }

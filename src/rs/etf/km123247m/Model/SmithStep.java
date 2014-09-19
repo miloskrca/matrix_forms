@@ -5,6 +5,8 @@ import rs.etf.km123247m.Matrix.Forms.Implementation.SmithMatrixForm;
 import rs.etf.km123247m.Matrix.Forms.MatrixForm;
 import rs.etf.km123247m.Observer.Event.FormEvent;
 
+import java.util.Collection;
+
 /**
  * Created by Miloš Krsmanović.
  * Sep 2014
@@ -17,17 +19,24 @@ public class SmithStep extends AbstractStep {
     }
 
     @Override
-    protected String generateMatrix() throws Exception {
-        SmithMatrixForm rForm = (SmithMatrixForm) getForm();
-        return "A = " + generateLatexMatrix(rForm.getFinalMatrix());
+    protected void saveMatricesForTheCurrentState() throws Exception {
+        SmithMatrixForm sForm = (SmithMatrixForm) getForm();
+        switch (getNumber()) {
+            case START:
+                matrices.add(new MatrixEntry("A", sForm.getHandler().duplicate(sForm.getStartMatrix())));
+                break;
+            case INFO:
+                matrices.add(new MatrixEntry("A_I", sForm.getHandler().duplicate(sForm.getFinalMatrix())));
+                break;
+            case END:
+                matrices.add(new MatrixEntry("A", sForm.getHandler().duplicate(sForm.getStartMatrix())));
+                matrices.add(new MatrixEntry("S", sForm.getHandler().duplicate(sForm.getFinalMatrix())));
+                break;
+            default:
+                //step
+                matrices.add(new MatrixEntry("A_I", sForm.getHandler().duplicate(sForm.getFinalMatrix())));
+        }
     }
-
-    @Override
-    protected String generateMupadMatrices() throws Exception {
-        SmithMatrixForm rForm = (SmithMatrixForm) getForm();
-        return generateMupadMatrix("A", rForm.getFinalMatrix());
-    }
-
 
     @Override
     public String getLatexTitle() {
@@ -44,7 +53,7 @@ public class SmithStep extends AbstractStep {
                 break;
             default:
                 //step
-                title += "\\text{\\LARGE Step " + getNumber() + "}\\cr \\text{\\Large " + (getCommand() == null ? "" : getCommand().getDescription()) + " }";
+                title += "\\text{\\LARGE Step " + getNumber() + "}\\cr \\text{\\Large " + getCommandDescription() + " }";
         }
 
         return title + "\\end{array}";

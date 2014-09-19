@@ -1,11 +1,14 @@
 package rs.etf.km123247m.Model;
 
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import rs.etf.km123247m.Command.ICommand;
+import rs.etf.km123247m.Command.MatrixCommand.*;
 import rs.etf.km123247m.Matrix.Forms.MatrixForm;
 import rs.etf.km123247m.Matrix.IMatrix;
 import rs.etf.km123247m.Observer.Event.FormEvent;
 
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * Created by Miloš Krsmanović.
@@ -23,8 +26,7 @@ public abstract class AbstractStep {
     private MatrixForm form;
     private FormEvent event;
     private ICommand command;
-    private String matrixState;
-    private String mupadMatrixState;
+    protected ArrayList<Map.Entry<String, IMatrix>> matrices = new ArrayList<Map.Entry<String, IMatrix>>();
 
     public AbstractStep(int number, ICommand command, FormEvent event, MatrixForm form) {
         this.number = number;
@@ -32,19 +34,36 @@ public abstract class AbstractStep {
         this.event = event;
         this.form = form;
         try {
-            matrixState = generateMatrix();
-            mupadMatrixState = generateMupadMatrices();
+            saveMatricesForTheCurrentState();
         } catch (Exception e) {
             System.out.println(Arrays.toString(e.getStackTrace()));
         }
     }
 
-    public String getMatrixState() {
-        return matrixState;
+    protected abstract void saveMatricesForTheCurrentState() throws Exception;
+
+    public Collection<Pane> getPanes() throws Exception {
+        ArrayList<Pane> panes = new ArrayList<Pane>();
+        panes.add(getPane(getLatexTitle()));
+        for(Map.Entry<String, IMatrix> entry: matrices) {
+            panes.add(getPane(generateLatexMatrix(entry.getKey(), entry.getValue())));
+        }
+        return panes;
     }
 
-    public String getMupadMatrices() {
-        return mupadMatrixState;
+    protected Pane getPane(String formula) {
+        LaTexCanvas canvas = new LaTexCanvas();
+
+        Pane pane = new AnchorPane();
+        pane.setMinHeight(20 + getForm().getHandler().getMatrix().getRowNumber() * 20);
+        pane.getChildren().add(canvas);
+        // Bind canvas size to stack pane size.
+        canvas.widthProperty().bind(pane.widthProperty());
+        canvas.heightProperty().bind(pane.heightProperty());
+        canvas.setFormula(formula);
+        canvas.render();
+
+        return pane;
     }
 
     public String getTitle() {
@@ -60,13 +79,10 @@ public abstract class AbstractStep {
         }
     }
 
-    protected abstract String generateMatrix() throws Exception;
-    protected abstract String generateMupadMatrices() throws Exception;
-
     public abstract String getLatexTitle();
 
-    protected String generateLatexMatrix(IMatrix matrix) throws Exception {
-        String f = "\\begin{bmatrix}";
+    protected String generateLatexMatrix(String name, IMatrix matrix) throws Exception {
+        String f = name +" = \\begin{bmatrix}";
         for (int row = 0; row < matrix.getRowNumber(); row++) {
             for (int column = 0; column < matrix.getColumnNumber(); column++) {
                 f += matrix.get(row, column).getElement().toString();
@@ -98,6 +114,50 @@ public abstract class AbstractStep {
         f += "])";
 
         return f;
+    }
+
+    public String getCommandDescription() {
+        String description;
+        String commandClass = command.getClass().getSimpleName();
+        if(commandClass.equals("SwitchColumnsCommand")) {
+            SwitchColumnsCommand comm = (SwitchColumnsCommand)command;
+            description = "Switching columns " + comm.getColumn1() + " and " + comm.getColumn2() + ".";
+        } else if (commandClass.equals("SwitchRowsCommand")) {
+            SwitchRowsCommand comm = (SwitchRowsCommand)command;
+            description = "Switching rows " + comm.getRow1() + " and " + comm.getRow2() + ".";
+        } else if (commandClass.equals("MultiplyRowWithElementAndStoreCommand")) {
+            MultiplyRowWithElementAndStoreCommand comm = (MultiplyRowWithElementAndStoreCommand)command;
+            description = "Multiplying row "
+                    + comm.getRow() + " with element "
+                    + comm.getElement().toString() + ".";
+        } else if (commandClass.equals("MultiplyRowWithElementAndAddToRowAndStoreCommand")) {
+            MultiplyRowWithElementAndAddToRowAndStoreCommand comm = (MultiplyRowWithElementAndAddToRowAndStoreCommand)command;
+            description = "Multiplying row "
+                    + comm.getRow1() + " with element "
+                    + comm.getElement().toString() + " and saving to row "
+                    + comm.getRow2() + ".";
+        } else if (commandClass.equals("MultiplyColumnWithElementAndStoreCommand")) {
+            MultiplyColumnWithElementAndStoreCommand comm = (MultiplyColumnWithElementAndStoreCommand)command;
+            description = "Multiplying column "
+                    + comm.getColumn() + " with element "
+                    + comm.getElement().toString() + ".";
+        } else if (commandClass.equals("MultiplyColumnWithElementAndAddToColumnAndStoreCommand")) {
+            MultiplyColumnWithElementAndAddToColumnAndStoreCommand comm = (MultiplyColumnWithElementAndAddToColumnAndStoreCommand)command;
+            description = "Multiplying column "
+                    + comm.getColumn1() + " with element "
+                    + comm.getElement().toString() + " and saving to column "
+                    + comm.getColumn2() + ".";
+        } else if (commandClass.equals("AddRowsAndStoreCommand")) {
+            AddRowsAndStoreCommand comm = (AddRowsAndStoreCommand)command;
+            description = "Adding rows " + comm.getRow1() + " and " + comm.getRow2() + ".";
+        } else if (commandClass.equals("AddColumnsAndStoreCommand")) {
+            AddColumnsAndStoreCommand comm = (AddColumnsAndStoreCommand)command;
+            description = "Adding columns " + comm.getColumn1() + " and " + comm.getColumn2() + ".";
+        } else {
+            description = commandClass;
+        }
+
+        return description;
     }
 
     public int getNumber() {

@@ -27,6 +27,7 @@ import rs.etf.km123247m.Parser.MatrixParser.SymJa.IExprMatrixStringParser;
 import rs.etf.km123247m.Parser.ParserTypes.StringParser;
 
 import java.io.*;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Observable;
 
@@ -156,13 +157,10 @@ public class MainAppController implements FormObserver {
         } else {
             try {
                 selectedStep = stepObjects.get(selected);
-                addCanvas(selectedStep.getLatexTitle()).render();
-                if(selected > 0 && selected < stepObjects.size() - 1) {
-                    addCanvas(stepObjects.get(selected - 1).getMatrixState()).render();
-                    matrixStateVBox.getChildren().add(new TextArea(stepObjects.get(selected - 1).getMupadMatrices()));
+                Collection<Pane> panes = selectedStep.getPanes();
+                for(Pane pane: panes) {
+                    matrixStateVBox.getChildren().add(pane);
                 }
-                addCanvas(selectedStep.getMatrixState()).render();
-                matrixStateVBox.getChildren().add(new TextArea(selectedStep.getMupadMatrices()));
             } catch (Exception e) {
                 e.printStackTrace();
             }

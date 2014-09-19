@@ -3,7 +3,13 @@ package rs.etf.km123247m.Model;
 import rs.etf.km123247m.Command.ICommand;
 import rs.etf.km123247m.Matrix.Forms.Implementation.RationalCanonicalMatrixForm;
 import rs.etf.km123247m.Matrix.Forms.MatrixForm;
+import rs.etf.km123247m.Matrix.Handler.MatrixHandler;
+import rs.etf.km123247m.Matrix.IMatrix;
 import rs.etf.km123247m.Observer.Event.FormEvent;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by Miloš Krsmanović.
@@ -18,67 +24,27 @@ public class RationalCanonicalStep extends AbstractStep {
     }
 
     @Override
-    protected String generateMatrix() throws Exception {
+    protected void saveMatricesForTheCurrentState() throws Exception {
         RationalCanonicalMatrixForm rForm = (RationalCanonicalMatrixForm) getForm();
-        String text;
+        MatrixHandler handler = rForm.getHandler();
         switch (getNumber()) {
             case START:
-                if(rForm.getRound() == 0) {
-                    text = "A = " + generateLatexMatrix(rForm.getStartMatrix())
-                            + "\nxI - A = " + generateLatexMatrix(rForm.getTransitionalMatrix(rForm.getRound()));
-                } else {
-                    text = "B = " + generateLatexMatrix(rForm.getStartMatrix())
-                            + "\nxI - B = " + generateLatexMatrix(rForm.getTransitionalMatrix(rForm.getRound()));
-                }
+                matrices.add(new MatrixEntry("A", handler.duplicate(rForm.getStartMatrix())));
                 break;
             case INFO:
-                text = "R = " + generateLatexMatrix(rForm.getFinalMatrix());
+                matrices.add(new MatrixEntry("A_I", handler.duplicate(rForm.getTransitionalMatrix(rForm.getRound()))));
                 break;
             case END:
-                text = "A = " + generateLatexMatrix(rForm.getStartMatrix())
-                        + "\nR = " + generateLatexMatrix(rForm.getFinalMatrix())
-                        + "\nT = " + generateLatexMatrix(rForm.getT());
+                matrices.add(new MatrixEntry("A", handler.duplicate(rForm.getStartMatrix())));
+                matrices.add(new MatrixEntry("R", handler.duplicate(rForm.getFinalMatrix())));
+                matrices.add(new MatrixEntry("T", handler.duplicate(rForm.getT())));
                 break;
             default:
                 //step
-                text = "P[" + rForm.getRound() + "] = " + generateLatexMatrix(rForm.getP(rForm.getRound()))
-                        + "\nA_I = " + generateLatexMatrix(rForm.getTransitionalMatrix(rForm.getRound()))
-                        + "Q[" + rForm.getRound() + "] = " + generateLatexMatrix(rForm.getQ(rForm.getRound()));
+                matrices.add(new MatrixEntry("P[" + rForm.getRound() + "]", handler.duplicate(rForm.getP(rForm.getRound()))));
+                matrices.add(new MatrixEntry("A_I", handler.duplicate(rForm.getTransitionalMatrix(rForm.getRound()))));
+                matrices.add(new MatrixEntry("Q[" + rForm.getRound() + "]", handler.duplicate(rForm.getQ(rForm.getRound()))));
         }
-
-        return text;
-    }
-
-    @Override
-    protected String generateMupadMatrices() throws Exception {
-        RationalCanonicalMatrixForm rForm = (RationalCanonicalMatrixForm) getForm();
-        String text;
-        switch (getNumber()) {
-            case START:
-                if(rForm.getRound() == 0) {
-                    text = generateMupadMatrix("A", rForm.getStartMatrix())
-                            + "\n" + generateMupadMatrix("xIminusA", rForm.getTransitionalMatrix(rForm.getRound()));
-                } else {
-                    text = generateMupadMatrix("B", rForm.getStartMatrix())
-                            + "\n" + generateMupadMatrix("xIminusB", rForm.getTransitionalMatrix(rForm.getRound()));
-                }
-                break;
-            case INFO:
-                text = generateMupadMatrix("R", rForm.getFinalMatrix());
-                break;
-            case END:
-                text = generateMupadMatrix("A", rForm.getStartMatrix())
-                        + "\n" + generateMupadMatrix("R", rForm.getFinalMatrix())
-                        + "\n" + generateMupadMatrix("T", rForm.getT());
-                break;
-            default:
-                //step
-                text = generateMupadMatrix("P" + rForm.getRound(), rForm.getP(rForm.getRound()))
-                        + "\n" + generateMupadMatrix("A_I", rForm.getTransitionalMatrix(rForm.getRound()))
-                        + "\n" + generateMupadMatrix("Q" + rForm.getRound(), rForm.getQ(rForm.getRound()));
-        }
-
-        return text;
     }
 
     @Override
@@ -96,7 +62,7 @@ public class RationalCanonicalStep extends AbstractStep {
                 break;
             default:
                 //step
-                title += "\\text{\\LARGE Step " + getNumber() + "}\\cr \\text{\\Large " + (getCommand() == null ? "" : getCommand().getDescription()) + " }";
+                title += "\\text{\\LARGE Step " + getNumber() + "}\\cr \\text{\\Large " + getCommandDescription() + " }";
         }
 
         return title + "\\end{array}";

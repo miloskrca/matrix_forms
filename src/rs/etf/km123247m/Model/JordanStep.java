@@ -17,39 +17,24 @@ public class JordanStep extends AbstractStep {
     }
 
     @Override
-    protected String generateMatrix() throws Exception {
-        JordanMatrixForm rForm = (JordanMatrixForm) getForm();
+    protected void saveMatricesForTheCurrentState() throws Exception {
+        JordanMatrixForm jForm = (JordanMatrixForm) getForm();
         switch (getNumber()) {
             case START:
-                return "A = " + generateLatexMatrix(rForm.getStartMatrix());
+                matrices.add(new MatrixEntry("A", jForm.getHandler().duplicate(jForm.getStartMatrix())));
+                break;
             case INFO:
-                return "A_I = " + generateLatexMatrix(rForm.getTransitionalMatrix());
+                matrices.add(new MatrixEntry("A_I", jForm.getHandler().duplicate(jForm.getTransitionalMatrix())));
+                break;
             case END:
-                return "A = " + generateLatexMatrix(rForm.getStartMatrix())
-                        + "J = " + generateLatexMatrix(rForm.getFinalMatrix());
+                matrices.add(new MatrixEntry("A", jForm.getHandler().duplicate(jForm.getStartMatrix())));
+                matrices.add(new MatrixEntry("J", jForm.getHandler().duplicate(jForm.getFinalMatrix())));
+                break;
             default:
                 //step
-                return "A_I " + generateLatexMatrix(rForm.getTransitionalMatrix());
+                matrices.add(new MatrixEntry("A_I", jForm.getHandler().duplicate(jForm.getTransitionalMatrix())));
         }
     }
-
-    @Override
-    protected String generateMupadMatrices() throws Exception {
-        JordanMatrixForm rForm = (JordanMatrixForm) getForm();
-        switch (getNumber()) {
-            case START:
-                return generateMupadMatrix("A", rForm.getStartMatrix());
-            case INFO:
-                return generateMupadMatrix("A_I", rForm.getTransitionalMatrix());
-            case END:
-                return generateMupadMatrix("A", rForm.getStartMatrix())
-                        + "\n" + generateMupadMatrix("J", rForm.getFinalMatrix());
-            default:
-                //step
-                return generateMupadMatrix("A_I", rForm.getTransitionalMatrix());
-        }
-    }
-
 
     @Override
     public String getLatexTitle() {
@@ -66,7 +51,7 @@ public class JordanStep extends AbstractStep {
                 break;
             default:
                 //step
-                title += "\\text{\\LARGE Step " + getNumber() + "}\\cr \\text{\\Large " + (getCommand() == null ? "" : getCommand().getDescription()) + " }";
+                title += "\\text{\\LARGE Step " + getNumber() + "}\\cr \\text{\\Large " + getCommandDescription() + " }";
         }
 
         return title + "\\end{array}";

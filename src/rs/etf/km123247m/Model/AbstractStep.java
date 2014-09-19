@@ -24,6 +24,7 @@ public abstract class AbstractStep {
     private FormEvent event;
     private ICommand command;
     private String matrixState;
+    private String mupadMatrixState;
 
     public AbstractStep(int number, ICommand command, FormEvent event, MatrixForm form) {
         this.number = number;
@@ -32,6 +33,7 @@ public abstract class AbstractStep {
         this.form = form;
         try {
             matrixState = generateMatrix();
+            mupadMatrixState = generateMupadMatrices();
         } catch (Exception e) {
             System.out.println(Arrays.toString(e.getStackTrace()));
         }
@@ -39,6 +41,10 @@ public abstract class AbstractStep {
 
     public String getMatrixState() {
         return matrixState;
+    }
+
+    public String getMupadMatrices() {
+        return mupadMatrixState;
     }
 
     public String getTitle() {
@@ -55,11 +61,11 @@ public abstract class AbstractStep {
     }
 
     protected abstract String generateMatrix() throws Exception;
+    protected abstract String generateMupadMatrices() throws Exception;
 
     public abstract String getLatexTitle();
 
     protected String generateLatexMatrix(IMatrix matrix) throws Exception {
-
         String f = "\\begin{bmatrix}";
         for (int row = 0; row < matrix.getRowNumber(); row++) {
             for (int column = 0; column < matrix.getColumnNumber(); column++) {
@@ -71,6 +77,25 @@ public abstract class AbstractStep {
             f += " \\\\";
         }
         f += "\\end{bmatrix}";
+
+        return f;
+    }
+    protected String generateMupadMatrix(String name, IMatrix matrix) throws Exception {
+        String f = name + " := matrix([";
+        for (int row = 0; row < matrix.getRowNumber(); row++) {
+            f += "[";
+            for (int column = 0; column < matrix.getColumnNumber(); column++) {
+                f += matrix.get(row, column).getElement().toString();
+                if(column < matrix.getColumnNumber() - 1) {
+                    f += ",";
+                }
+            }
+            f += "]";
+            if(row < matrix.getRowNumber() - 1) {
+                f += ",";
+            }
+        }
+        f += "])";
 
         return f;
     }
@@ -90,4 +115,5 @@ public abstract class AbstractStep {
     public FormEvent getEvent() {
         return event;
     }
+
 }

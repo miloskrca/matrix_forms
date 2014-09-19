@@ -22,6 +22,12 @@ public class SmithStep extends AbstractStep {
         return "A = " + generateLatexMatrix(rForm.getFinalMatrix());
     }
 
+    @Override
+    protected String generateMupadMatrices() throws Exception {
+        SmithMatrixForm rForm = (SmithMatrixForm) getForm();
+        return generateMupadMatrix("A", rForm.getFinalMatrix());
+    }
+
 
     @Override
     public String getLatexTitle() {

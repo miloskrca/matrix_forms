@@ -42,7 +42,40 @@ public class RationalCanonicalStep extends AbstractStep {
             default:
                 //step
                 text = "P[" + rForm.getRound() + "] = " + generateLatexMatrix(rForm.getP(rForm.getRound()))
-                        + "\nA_I = " + generateLatexMatrix(rForm.getTransitionalMatrix(rForm.getRound()));
+                        + "\nA_I = " + generateLatexMatrix(rForm.getTransitionalMatrix(rForm.getRound()))
+                        + "Q[" + rForm.getRound() + "] = " + generateLatexMatrix(rForm.getQ(rForm.getRound()));
+        }
+
+        return text;
+    }
+
+    @Override
+    protected String generateMupadMatrices() throws Exception {
+        RationalCanonicalMatrixForm rForm = (RationalCanonicalMatrixForm) getForm();
+        String text;
+        switch (getNumber()) {
+            case START:
+                if(rForm.getRound() == 0) {
+                    text = generateMupadMatrix("A", rForm.getStartMatrix())
+                            + "\n" + generateMupadMatrix("xIminusA", rForm.getTransitionalMatrix(rForm.getRound()));
+                } else {
+                    text = generateMupadMatrix("B", rForm.getStartMatrix())
+                            + "\n" + generateMupadMatrix("xIminusB", rForm.getTransitionalMatrix(rForm.getRound()));
+                }
+                break;
+            case INFO:
+                text = generateMupadMatrix("R", rForm.getFinalMatrix());
+                break;
+            case END:
+                text = generateMupadMatrix("A", rForm.getStartMatrix())
+                        + "\n" + generateMupadMatrix("R", rForm.getFinalMatrix())
+                        + "\n" + generateMupadMatrix("T", rForm.getT());
+                break;
+            default:
+                //step
+                text = generateMupadMatrix("P" + rForm.getRound(), rForm.getP(rForm.getRound()))
+                        + "\n" + generateMupadMatrix("A_I", rForm.getTransitionalMatrix(rForm.getRound()))
+                        + "\n" + generateMupadMatrix("Q" + rForm.getRound(), rForm.getQ(rForm.getRound()));
         }
 
         return text;

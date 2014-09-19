@@ -1,6 +1,5 @@
 package rs.etf.km123247m.Controller;
 
-import edu.jas.arith.Rational;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,18 +16,15 @@ import rs.etf.km123247m.MainApp;
 import rs.etf.km123247m.Matrix.Forms.Implementation.PolynomialRationalCanonicalMatrixForm;
 import rs.etf.km123247m.Matrix.Forms.Implementation.SmithMatrixForm;
 import rs.etf.km123247m.Matrix.Forms.MatrixForm;
-import rs.etf.km123247m.Matrix.Handler.Implementation.MathITMatrixHandler;
+import rs.etf.km123247m.Matrix.Handler.Implementation.SymJaMatrixHandler;
 import rs.etf.km123247m.Matrix.Handler.MatrixHandler;
 import rs.etf.km123247m.Matrix.IMatrix;
 import rs.etf.km123247m.Model.*;
 import rs.etf.km123247m.Observer.Event.FormEvent;
 import rs.etf.km123247m.Observer.FormObserver;
-import rs.etf.km123247m.Parser.MatrixParser.MathIT.MathITMatrixFileParser;
-import rs.etf.km123247m.Parser.MatrixParser.MathIT.MathITMatrixStringParser;
-import rs.etf.km123247m.Parser.ParserTypes.IParser;
+import rs.etf.km123247m.Parser.MatrixParser.SymJa.IExprMatrixStringParser;
 import rs.etf.km123247m.Parser.ParserTypes.StringParser;
 
-import java.awt.*;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.Observable;
@@ -157,12 +153,18 @@ public class MainAppController implements FormObserver {
         if (selected == -1) {
             addCanvas("\\text{No steps selected.}").render();
         } else {
-            selectedStep = stepObjects.get(selected);
-            addCanvas(selectedStep.getLatexTitle()).render();
-            if(selected > 0 && selected < stepObjects.size() - 1) {
-                addCanvas(stepObjects.get(selected - 1).getMatrixState()).render();
+            try {
+                selectedStep = stepObjects.get(selected);
+                addCanvas(selectedStep.getLatexTitle()).render();
+                if(selected > 0 && selected < stepObjects.size() - 1) {
+                    addCanvas(stepObjects.get(selected - 1).getMatrixState()).render();
+                    matrixStateVBox.getChildren().add(new TextArea(stepObjects.get(selected - 1).getMupadMatrices()));
+                }
+                addCanvas(selectedStep.getMatrixState()).render();
+                matrixStateVBox.getChildren().add(new TextArea(selectedStep.getMupadMatrices()));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            addCanvas(selectedStep.getMatrixState()).render();
         }
     }
 
@@ -177,14 +179,14 @@ public class MainAppController implements FormObserver {
             stepList.setItems(items);
             count = 1;
             stepObjects.clear();
-            StringParser parser = new MathITMatrixStringParser();
+            StringParser parser = new IExprMatrixStringParser(true);
             parser.setInputString(inlineInput.getText());
             try {
                 String selectedItem = (String) selectForm.getSelectionModel().getSelectedItem();
                 if (selectedItem != null) {
                     IMatrix matrix = (IMatrix) parser.parseInput();
                     range = matrix.getRowNumber();
-                    MatrixHandler handler = new MathITMatrixHandler(matrix);
+                    MatrixHandler handler = new SymJaMatrixHandler(matrix);
                     matrixForm = null;
                     if (selectedItem.equals(SMITH_FORM)) {
                         matrixForm = new SmithMatrixForm(handler);
@@ -236,7 +238,7 @@ public class MainAppController implements FormObserver {
                 statusLabel.setText("Done.");
                 break;
             case FormEvent.PROCESSING_EXCEPTION:
-//                stepDetailsTitle.getEngine().loadContent(event.getMessage());
+                System.out.println(event.getMessage());
                 break;
         }
     }

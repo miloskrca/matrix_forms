@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import rs.etf.km123247m.Command.ICommand;
 import rs.etf.km123247m.MainApp;
+import rs.etf.km123247m.Matrix.Forms.Implementation.JordanMatrixForm;
 import rs.etf.km123247m.Matrix.Forms.Implementation.PolynomialRationalCanonicalMatrixForm;
 import rs.etf.km123247m.Matrix.Forms.Implementation.SmithMatrixForm;
 import rs.etf.km123247m.Matrix.Forms.MatrixForm;
@@ -193,7 +194,7 @@ public class MainAppController implements FormObserver {
                     } else if (selectedItem.equals(RATIONAL_FORM)) {
                         matrixForm = new PolynomialRationalCanonicalMatrixForm(handler);
                     } else if (selectedItem.equals(JORDANS_FORM)) {
-                        matrixForm = null;
+                        matrixForm = new JordanMatrixForm(handler);
                     }
                     if (matrixForm != null) {
                         matrixForm.addObserver(this);
@@ -250,7 +251,7 @@ public class MainAppController implements FormObserver {
         } else if (selectedItem.equals(RATIONAL_FORM)) {
             return new RationalCanonicalStep(type, command, event, form);
         } else if (selectedItem.equals(JORDANS_FORM)) {
-            return null;
+            return new JordanStep(type, command, event, form);
         }
 
         return null;

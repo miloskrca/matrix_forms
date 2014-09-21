@@ -11,6 +11,7 @@
           <Menu mnemonicParsing="false" text="File">
             <items>
                   <MenuItem mnemonicParsing="false" onAction="#chooseFileAction" text="Open File" />
+                  <MenuItem mnemonicParsing="false" onAction="#getInMuPadFormatAction" text="Get in MuPad format" />
               <MenuItem mnemonicParsing="false" onAction="#closeAction" text="Close" />
             </items>
           </Menu>
@@ -18,7 +19,7 @@
             <items>
               <MenuItem mnemonicParsing="false" onAction="#set2x2ExampleMatrixAction" text="2x2" />
                   <MenuItem mnemonicParsing="false" onAction="#set3x3ExampleMatrixAction" text="3x3" />
-                  <MenuItem mnemonicParsing="false" onAction="#set3x3PolyExampleMatrixAction" text="3x3 with polynomial elements" />
+                  <MenuItem mnemonicParsing="false" onAction="#set3x3PolyExampleMatrixAction" text="4x4" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
@@ -36,7 +37,7 @@
                <children>
                   <ToolBar prefHeight="40.0" prefWidth="200.0">
                     <items>
-                        <ComboBox fx:id="selectForm" prefWidth="150.0" promptText="-- Select form --" />
+                        <ComboBox fx:id="selectForm" prefHeight="25.0" prefWidth="193.0" promptText="-- Select form --" />
                         <Separator />
                       <Button mnemonicParsing="false" onAction="#startTransformation" text="Start" />
                         <Separator />

@@ -3,14 +3,17 @@ package rs.etf.km123247m.Controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import rs.etf.km123247m.Command.ICommand;
 import rs.etf.km123247m.MainApp;
 import rs.etf.km123247m.Matrix.Forms.Implementation.JordanMatrixForm;
@@ -72,7 +75,7 @@ public class MainAppController implements FormObserver {
         selectForm.setItems(formOptions);
     }
 
-    protected LaTexCanvas addCanvas(String formula) {
+    protected LaTexCanvas getCanvas(String formula) {
         LaTexCanvas canvas = new LaTexCanvas();
 
         Pane pane = new AnchorPane();
@@ -81,7 +84,6 @@ public class MainAppController implements FormObserver {
         // Bind canvas size to stack pane size.
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
-        matrixStateVBox.getChildren().add(pane);
 
         canvas.setFormula(formula);
 
@@ -108,9 +110,9 @@ public class MainAppController implements FormObserver {
 
     @FXML
     private void set3x3PolyExampleMatrixAction() {
-        statusLabel.setText("Loaded example 3x3 matrix with polynomial elements.");
+        statusLabel.setText("Loaded example 4x4 matrix.");
         fileNameLabel.setText("");
-        inlineInput.setText(MatrixExamples.THREExTHREE_POLY);
+        inlineInput.setText(MatrixExamples.FOURxFOUR);
     }
 
     @FXML
@@ -148,12 +150,41 @@ public class MainAppController implements FormObserver {
     }
 
     @FXML
+    private void getInMuPadFormatAction() {
+        StackPane secondaryLayout = new StackPane();
+        Integer selected = stepList.getSelectionModel().getSelectedIndices().get(0);
+        AbstractStep selectedStep;
+
+        if (selected == -1) {
+            secondaryLayout.getChildren().add(new Label("No steps selected."));
+        } else {
+            try {
+                selectedStep = stepObjects.get(selected);
+                secondaryLayout.getChildren().add(new TextArea(selectedStep.getMuPadCommands()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        Scene secondScene = new Scene(secondaryLayout, 400, 200);
+        Stage secondStage = new Stage();
+        secondStage.setTitle("Matrices in MuPad format");
+        secondStage.setScene(secondScene);
+        //Set position of second window, related to primary window.
+        secondStage.setX(mainApp.getPrimaryStage().getX() + 250);
+        secondStage.setY(mainApp.getPrimaryStage().getY() + 100);
+        secondStage.show();
+    }
+
+    @FXML
     private void stepSelected() {
         matrixStateVBox.getChildren().clear();
         Integer selected = stepList.getSelectionModel().getSelectedIndices().get(0);
         AbstractStep selectedStep;
         if (selected == -1) {
-            addCanvas("\\text{No steps selected.}").render();
+            LaTexCanvas canvas = getCanvas("\\text{No steps selected.}");
+            matrixStateVBox.getChildren().add(canvas);
+            canvas.render();
         } else {
             try {
                 selectedStep = stepObjects.get(selected);
@@ -163,6 +194,9 @@ public class MainAppController implements FormObserver {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                for (StackTraceElement s: e.getStackTrace()) {
+                    matrixStateVBox.getChildren().add(new Label(s.toString()));
+                }
             }
         }
     }
@@ -200,7 +234,8 @@ public class MainAppController implements FormObserver {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                statusLabel.setText(e.getMessage());
+                matrixStateVBox.getChildren().add(new Label(e.getMessage()));
             }
         }
     }
@@ -237,6 +272,7 @@ public class MainAppController implements FormObserver {
                 statusLabel.setText("Done.");
                 break;
             case FormEvent.PROCESSING_EXCEPTION:
+                statusLabel.setText(event.getMessage());
                 System.out.println(event.getMessage());
                 break;
         }

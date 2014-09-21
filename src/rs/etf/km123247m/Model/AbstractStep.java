@@ -42,6 +42,15 @@ public abstract class AbstractStep {
 
     protected abstract void saveMatricesForTheCurrentState() throws Exception;
 
+    public String getMuPadCommands() throws Exception {
+        String mupadCommands = "";
+        for(Map.Entry<String, IMatrix> entry: matrices) {
+            mupadCommands += "\n" + generateMupadMatrix(entry.getKey(), entry.getValue());
+        }
+
+        return mupadCommands;
+    }
+
     public Collection<Pane> getPanes() throws Exception {
         ArrayList<Pane> panes = new ArrayList<Pane>();
         panes.add(getPane(getLatexTitle()));
@@ -55,7 +64,7 @@ public abstract class AbstractStep {
         LaTexCanvas canvas = new LaTexCanvas();
 
         Pane pane = new AnchorPane();
-        pane.setMinHeight(20 + getForm().getHandler().getMatrix().getRowNumber() * 20);
+        pane.setMinHeight(20 + getForm().getHandler().getMatrix().getRowNumber() * 24);
         pane.getChildren().add(canvas);
         // Bind canvas size to stack pane size.
         canvas.widthProperty().bind(pane.widthProperty());
@@ -175,5 +184,4 @@ public abstract class AbstractStep {
     public FormEvent getEvent() {
         return event;
     }
-
 }

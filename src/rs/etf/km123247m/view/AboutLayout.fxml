@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="21.0" layoutY="39.0" prefHeight="17.0" prefWidth="267.0" text="Razvio: Miloš Krsmanović" />
+      <Text layoutX="18.0" layoutY="96.0" nodeOrientation="LEFT_TO_RIGHT" strokeType="OUTSIDE" strokeWidth="0.0" text="Za svrhu izrade master rada na Elektrotehničkom fakultetu u Beogradu." wrappingWidth="267.0" />
+      <Label alignment="BOTTOM_RIGHT" contentDisplay="RIGHT" layoutX="23.0" layoutY="169.0" prefHeight="17.0" prefWidth="267.0" text="Septembar 2014" />
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="17.0" layoutY="56.0" prefHeight="17.0" prefWidth="267.0" text="br. indeksa: 2012/3247" />
+   </children>
+</AnchorPane>

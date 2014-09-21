@@ -3,15 +3,13 @@ package rs.etf.km123247m.Controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import rs.etf.km123247m.Command.ICommand;
@@ -289,5 +287,21 @@ public class MainAppController implements FormObserver {
         }
 
         return null;
+    }
+
+    @FXML
+    private void showAboutAction() {
+        try {
+            Stage stage = new Stage();
+            stage.setTitle("About");
+            FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("view/AboutLayout.fxml"));
+            AnchorPane rootLayout;
+            rootLayout = loader.load();
+            Scene scene = new Scene(rootLayout);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

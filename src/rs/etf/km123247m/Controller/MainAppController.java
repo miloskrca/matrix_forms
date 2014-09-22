@@ -5,10 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -73,7 +70,7 @@ public class MainAppController implements FormObserver {
         selectForm.setItems(formOptions);
     }
 
-    protected LaTexCanvas getCanvas(String formula) {
+    protected Pane getCanvasPane(String formula) {
         LaTexCanvas canvas = new LaTexCanvas();
 
         Pane pane = new AnchorPane();
@@ -84,8 +81,9 @@ public class MainAppController implements FormObserver {
         canvas.heightProperty().bind(pane.heightProperty());
 
         canvas.setFormula(formula);
+        canvas.render();
 
-        return canvas;
+        return pane;
     }
 
     public void setMainApp(MainApp mainApp) {
@@ -180,9 +178,8 @@ public class MainAppController implements FormObserver {
         Integer selected = stepList.getSelectionModel().getSelectedIndices().get(0);
         AbstractStep selectedStep;
         if (selected == -1) {
-            LaTexCanvas canvas = getCanvas("\\text{No steps selected.}");
-            matrixStateVBox.getChildren().add(canvas);
-            canvas.render();
+            Pane pane = getCanvasPane("\\text{No steps selected.}");
+            matrixStateVBox.getChildren().add(pane);
         } else {
             try {
                 selectedStep = stepObjects.get(selected);

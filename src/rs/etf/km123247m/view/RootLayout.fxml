@@ -88,7 +88,11 @@
                         </AnchorPane>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                            <children>
-                              <VBox fx:id="matrixStateVBox" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <ScrollPane fitToHeight="true" fitToWidth="true" pannable="true" prefHeight="293.0" prefViewportHeight="293.0" prefViewportWidth="392.0" prefWidth="392.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <content>
+                                    <VBox fx:id="matrixStateVBox" style="-fx-background-color: white;" />
+                                 </content>
+                              </ScrollPane>
                            </children>
                         </AnchorPane>
                     </items>

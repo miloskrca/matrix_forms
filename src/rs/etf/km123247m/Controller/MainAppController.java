@@ -1,5 +1,6 @@
 package rs.etf.km123247m.Controller;
 
+import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -88,6 +89,34 @@ public class MainAppController implements FormObserver {
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
+        Application.Parameters params = mainApp.getParameters();
+        boolean paramMatrix = false;
+        boolean paramForm = false;
+        if(params.getNamed().containsKey("matrix")) {
+            paramMatrix = true;
+            inlineInput.setText(params.getNamed().get("matrix"));
+        }
+        if(params.getNamed().containsKey("form")) {
+            int option = Integer.parseInt(params.getNamed().get("form"));
+            if(option >= 0 && option < formOptions.size()) {
+                paramForm = true;
+                selectForm.getSelectionModel().select(option);
+            } else {
+                System.out.println("Form option out of bounds. Available from 0 to " + (formOptions.size() - 1));
+            }
+        }
+        if(params.getRaw().contains("--run")) {
+            if(paramForm && paramMatrix) {
+                startTransformation();
+            } else {
+                if(paramForm) {
+                    System.out.println("--form option needs to be set.");
+                }
+                if(paramMatrix) {
+                    System.out.println("--matrix option needs to be set.");
+                }
+            }
+        }
     }
 
     @FXML

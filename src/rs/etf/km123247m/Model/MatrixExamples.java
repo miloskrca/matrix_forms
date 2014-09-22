@@ -15,8 +15,8 @@ public abstract class MatrixExamples {
                     "0, 2, 0;\n" +
                     "0, 0, 3;";
     public static final String FOURxFOUR =
-            "2, 1, 0, 1;\n" +
-                    "3, 5, 1, 4;\n" +
-                    "0, 2, 0, 4;\n" +
-                    "0, 0, 3, 0;";
+            "2, 0, 3, 0;\n" +
+                    "3, 5, 1, 1;\n" +
+                    "0, 0, 5, 0;\n" +
+                    "7, 0, 0, 7;";
 }

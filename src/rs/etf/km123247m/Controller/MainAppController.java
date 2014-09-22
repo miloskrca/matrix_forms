@@ -205,7 +205,6 @@ public class MainAppController implements FormObserver {
     @FXML
     private void startTransformation() {
         if (inlineInput.getText().length() > 0) {
-            statusLabel.setText("Working...");
             ObservableList<String> items = FXCollections.observableArrayList();
             stepList.setItems(items);
             count = 1;
@@ -227,6 +226,7 @@ public class MainAppController implements FormObserver {
                         matrixForm = new JordanMatrixForm(handler);
                     }
                     if (matrixForm != null) {
+                        statusLabel.setText("Working...");
                         matrixForm.addObserver(this);
                         matrixForm.start();
                     }
